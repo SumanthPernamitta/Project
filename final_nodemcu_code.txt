@@ -1,0 +1,45 @@
+#include <ESP8266WiFi.h>
+#include <FirebaseArduino.h>
+
+// Set these to run example.
+#define FIREBASE_HOST "energymonitor-d7d65.firebaseio.com"
+#define FIREBASE_AUTH "3NdJs6oniCvwNnD9w8OtPOUGAIdYKiOfhA4SNYZ6"
+#define WIFI_SSID "Hotspot"
+#define WIFI_PASSWORD "00000000"
+
+void setup() 
+{
+
+  Serial.begin(9600);
+  // connect to wifi.
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  Serial.print("connecting");
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.print(".");
+    delay(500);
+  }
+  Serial.println();
+  Serial.print("connected: ");
+  Serial.println(WiFi.localIP());
+  
+  Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
+
+}
+
+
+void loop() 
+{
+        
+      int i = Serial.read();           //reading serial data and storing in a variable
+      Firebase.setInt("Value", i);     //sending data to firebase
+
+      // handle error
+      if (Firebase.failed()) 
+      {
+        Serial.print("setting /number failed:");
+        Serial.println(Firebase.error());  
+        return;
+      }
+}
+
+  
